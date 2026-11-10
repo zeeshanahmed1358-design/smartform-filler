@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light">
+
+    <title>SmartForm Filler</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --ink: #14201f;
+            --muted: #5d6b69;
+            --line: #e2e8e7;
+            --teal: #0f766e;
+            --teal-soft: #e6f4f2;
+            --bg: #f5f7f6;
+            --red: #a32d2d;
+            --white: #ffffff;
+            --border-hover: #bdccca;
+            --radius: 10px;
+            --shadow: 0 2px 8px rgba(20, 32, 31, 0.035);
+            --shadow-hover: 0 5px 18px rgba(20, 32, 31, 0.07);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont,
+                "Segoe UI", sans-serif;
+            font-size: 13px;
+            line-height: 1.6;
+            color: var(--ink);
+            background: var(--bg);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        button, input, select {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        [hidden] {
+            display: none !important;
+        }
+
+        .bar {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            min-height: 64px;
+            padding: 0 30px;
+            background: var(--white);
+            border-bottom: 1px solid var(--line);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--ink);
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: -0.4px;
+            white-space: nowrap;
+        }
+
+        .brand img {
+            width: 30px;
+            height: 30px;
+            object-fit: contain;
+            border-radius: 7px;
+        }
+
+        nav {
+            display: flex;
+            align-items: center;
+            height: 100%;
+            gap: 5px;
+        }
+
+        nav button {
+            height: 64px;
+            padding: 0 15px;
+            border: 0;
+            border-bottom: 2px solid transparent;
+            background: none;
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 500;
+            transition: 0.2s ease;
+        }
+
+        nav button:hover {
+            color: var(--teal);
+        }
+
+        nav button.on {
+            color: var(--teal);
+            border-bottom-color: var(--teal);
+            font-weight: 700;
+        }
+
+        .status {
+            margin-left: auto;
+            color: var(--muted);
+            font-size: 11px;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        main {
+            width: 100%;
+            max-width: 1160px;
+            margin: 0 auto;
+            padding: 32px 26px 60px;
+        }
+
+        #tab-profile {
+            display: grid;
+            grid-template-columns: 225px minmax(0, 1fr);
+            align-items: start;
+            gap: 22px;
+        }
+
+        aside {
+            padding: 16px 12px;
+            background: var(--white);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 86px;
+        }
+
+        aside h2 {
+            margin: 2px 8px 13px;
+            color: var(--muted);
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+        }
+
+        aside ul {
+            list-style: none;
+            margin: 0 0 13px;
+            padding: 0;
+        }
+
+        aside li {
+            margin-bottom: 4px;
+        }
+
+        aside li button {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 7px;
+            width: 100%;
+            min-height: 40px;
+            padding: 8px 10px;
+            border: 1px solid transparent;
+            border-radius: 7px;
+            background: transparent;
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 500;
+            text-align: left;
+            transition: 0.2s ease;
+        }
+
+        aside li button:hover {
+            background: var(--bg);
+            color: var(--teal);
+        }
+
+        aside li button.on {
+            background: var(--teal-soft);
+            border-color: #d4eae6;
+            color: var(--teal);
+            font-weight: 700;
+        }
+
+        .tag {
+            padding: 2px 7px;
+            border-radius: 20px;
+            background: var(--teal-soft);
+            color: var(--teal);
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        .panel {
+            display: grid;
+            gap: 17px;
+            min-width: 0;
+        }
+
+        .card {
+            padding: 23px 24px;
+            background: var(--white);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            transition: box-shadow 0.2s ease;
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-hover);
+        }
+
+        .card h2 {
+            margin: 0 0 5px;
+            color: var(--ink);
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: -0.2px;
+        }
+
+        .card p.lead {
+            margin: 0 0 19px;
+            color: var(--muted);
+            font-size: 11px;
+            line-height: 1.7;
+        }
+
+        .head {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .head input.name {
+            flex: 1;
+            min-width: 0;
+            padding: 5px 8px;
+            border: 1px solid transparent;
+            border-radius: 7px;
+            background: transparent;
+            color: var(--ink);
+            font-size: 21px;
+            font-weight: 700;
+            letter-spacing: -0.6px;
+            transition: 0.2s ease;
+        }
+
+        .head input.name:hover,
+        .head input.name:focus {
+            border-color: var(--border-hover);
+            background: var(--white);
+        }
+
+        .meter {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            margin-top: 15px;
+            color: var(--muted);
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .meter .track {
+            flex: 1;
+            height: 6px;
+            overflow: hidden;
+            border-radius: 20px;
+            background: var(--line);
+        }
+
+        .meter .fill {
+            width: 0;
+            height: 100%;
+            border-radius: 20px;
+            background: var(--teal);
+            transition: width 0.3s ease;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 19px 20px;
+        }
+
+        .field {
+            min-width: 0;
+        }
+
+        .field label.l {
+            display: block;
+            margin-bottom: 6px;
+            color: var(--ink);
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="url"],
+        input[type="date"],
+        input[type="number"],
+        input[type="password"],
+        select {
+            width: 100%;
+            height: 40px;
+            padding: 0 11px;
+            border: 1px solid #cfd8d6;
+            border-radius: 7px;
+            background: var(--white);
+            color: var(--ink);
+            font-size: 12px;
+            font-weight: 400;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        input::placeholder {
+            color: #9ba8a5;
+        }
+
+        input:hover,
+        select:hover {
+            border-color: var(--border-hover);
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--teal);
+            box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.09);
+        }
+
+        .hint {
+            margin-top: 5px;
+            color: var(--muted);
+            font-size: 10px;
+            line-height: 1.6;
+        }
+
+        details.alias {
+            margin-top: 6px;
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        details.alias summary {
+            width: max-content;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        details.alias summary:hover {
+            color: var(--teal);
+        }
+
+        details.alias input {
+            height: 35px;
+            margin-top: 7px;
+            font-size: 11px;
+        }
+
+        button.btn {
+            min-height: 37px;
+            padding: 8px 14px;
+            border: 1px solid #cfd8d6;
+            border-radius: 7px;
+            background: var(--white);
+            color: var(--ink);
+            font-size: 11px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        button.btn:hover {
+            border-color: var(--border-hover);
+            background: var(--bg);
+        }
+
+        button.btn.primary {
+            border-color: var(--teal);
+            background: var(--teal);
+            color: var(--white);
+        }
+
+        button.btn.primary:hover {
+            background: #0c625b;
+            border-color: #0c625b;
+        }
+
+        button.btn.danger {
+            color: var(--red);
+        }
+
+        button.btn.danger:hover {
+            background: #fff7f7;
+            border-color: #e5caca;
+        }
+
+        button.ghost {
+            width: 100%;
+            min-height: 39px;
+            padding: 8px;
+            border: 1px dashed #b6c3c1;
+            border-radius: 7px;
+            background: transparent;
+            color: var(--teal);
+            font-size: 11px;
+            font-weight: 600;
+            transition: 0.2s ease;
+        }
+
+        button.ghost:hover {
+            background: var(--teal-soft);
+            border-color: var(--teal);
+        }
+
+        .photo {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .photo .frame {
+            width: 105px;
+            height: 135px;
+            flex-shrink: 0;
+            display: grid;
+            place-items: center;
+            overflow: hidden;
+            border: 1px dashed #b6c3c1;
+            border-radius: 8px;
+            background: var(--bg);
+            color: var(--muted);
+            font-size: 11px;
+            text-align: center;
+        }
+
+        .photo img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .photo .btns {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 9px;
+        }
+
+        .addrow {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 9px;
+            margin-top: 16px;
+        }
+
+        .remove {
+            margin-left: 8px;
+            padding: 3px;
+            border: 0;
+            background: transparent;
+            color: var(--red);
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .remove:hover {
+            text-decoration: underline;
+        }
+
+        #tab-settings {
+            width: 100%;
+            max-width: 760px;
+            margin: 0 auto;
+            display: grid;
+            gap: 17px;
+        }
+
+        #tab-settings .card {
+            padding: 23px 24px;
+        }
+
+        #tab-settings .card h2 {
+            margin-bottom: 5px;
+        }
+
+        .switch {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 14px 0;
+            border-top: 1px solid var(--line);
+            cursor: pointer;
+        }
+
+        .switch:first-of-type {
+            border-top: 0;
+        }
+
+        .switch input {
+            flex-shrink: 0;
+            width: 17px;
+            height: 17px;
+            margin: 2px 0 0;
+            accent-color: var(--teal);
+            cursor: pointer;
+        }
+
+        .switch b {
+            display: block;
+            margin-bottom: 3px;
+            color: var(--ink);
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .switch span {
+            display: block;
+            color: var(--muted);
+            font-size: 11px;
+            line-height: 1.6;
+        }
+
+        .row {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 9px;
+        }
+
+        #aiBox {
+            margin-top: 8px;
+        }
+
+        button:focus-visible,
+        input:focus-visible,
+        select:focus-visible,
+        summary:focus-visible {
+            outline: 2px solid var(--teal);
+            outline-offset: 2px;
+        }
+
+        ::-webkit-scrollbar {
+            width: 7px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd6d3;
+            border-radius: 20px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #aebdb9;
+        }
+
+        @media (max-width: 850px) {
+            .bar {
+                padding: 0 20px;
+                gap: 20px;
+            }
+
+            main {
+                padding: 25px 20px 45px;
+            }
+
+            #tab-profile {
+                grid-template-columns: 190px minmax(0, 1fr);
+                gap: 16px;
+            }
+
+            .card {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 650px) {
+            .bar {
+                min-height: 62px;
+                height: auto;
+                padding: 9px 15px;
+                flex-wrap: wrap;
+                gap: 5px 15px;
+            }
+
+            .brand {
+                font-size: 14px;
+            }
+
+            nav {
+                height: 40px;
+            }
+
+            nav button {
+                height: 40px;
+                padding: 0 12px;
+            }
+
+            .status {
+                font-size: 10px;
+            }
+
+            main {
+                padding: 20px 14px 35px;
+            }
+
+            #tab-profile {
+                grid-template-columns: 1fr;
+            }
+
+            aside {
+                position: static;
+            }
+
+            aside ul {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 5px;
+            }
+
+            aside li {
+                flex: 1 1 130px;
+                margin: 0;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            #tab-settings .card {
+                padding: 19px;
+            }
+
+            .head input.name {
+                font-size: 19px;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .bar {
+                gap: 5px;
+            }
+
+            .brand img {
+                width: 27px;
+                height: 27px;
+            }
+
+            .status {
+                width: 100%;
+                margin: 0;
+            }
+
+            .photo {
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .photo .frame {
+                width: 85px;
+                height: 115px;
+            }
+
+            .photo .btns {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="bar">
+        <div class="brand">
+            <img src="icons/icon48.png" alt="SmartForm Filler">
+            <span>SmartForm Filler</span>
+        </div>
+
+        <nav aria-label="Main navigation">
+            <button
+                type="button"
+                data-tab="profile"
+                class="on"
+                aria-current="page">
+                Profiles
+            </button>
+
+            <button
+                type="button"
+                data-tab="settings">
+                Settings
+            </button>
+        </nav>
+
+        <span
+            id="status"
+            class="status"
+            role="status"
+            aria-live="polite">
+            All changes saved
+        </span>
+    </header>
+
+    <main>
+
+        <section id="tab-profile">
+
+            <aside>
+                <h2>Your profiles</h2>
+
+                <ul id="plist"></ul>
+
+                <button
+                    type="button"
+                    id="newProfile"
+                    class="ghost">
+                    + New profile
+                </button>
+            </aside>
+
+            <div id="panel" class="panel"></div>
+
+        </section>
+
+        <section id="tab-settings" hidden>
+
+            <div class="card">
+
+                <h2>Filling preferences</h2>
+
+                <p class="lead">
+                    Customize how SmartForm Filler interacts with website forms.
+                </p>
+
+                <label class="switch">
+                    <input type="checkbox" id="auto">
+
+                    <div>
+                        <b>Fill automatically when a page loads</b>
+                        <span>
+                            Automatically fill supported forms when a webpage
+                            loads. You can also use the toolbar button or your
+                            configured keyboard shortcut.
+                        </span>
+                    </div>
+                </label>
+
+                <label class="switch">
+                    <input type="checkbox" id="overwrite">
+
+                    <div>
+                        <b>Replace existing form values</b>
+                        <span>
+                            Allow SmartForm Filler to replace values already
+                            entered in website fields. Off by default.
+                        </span>
+                    </div>
+                </label>
+
+                <label class="switch">
+                    <input type="checkbox" id="learn">
+
+                    <div>
+                        <b>Learn new field names</b>
+                        <span>
+                            Remember website field labels when you manually
+                            enter information from your profile.
+                        </span>
+                    </div>
+                </label>
+
+                <div class="row" style="margin-top: 10px">
+                    <button
+                        type="button"
+                        class="btn"
+                        id="shortcut">
+                        Change keyboard shortcut
+                    </button>
+
+                    <button
+                        type="button"
+                        class="btn danger"
+                        id="clearLearned">
+                        Forget learned names
+                    </button>
+                </div>
+
+            </div>
+
+            <div class="card">
+
+                <h2>AI for unclear fields</h2>
+
+                <p class="lead">
+                    When built-in matching rules cannot identify a field,
+                    Claude can help. Only form titles, field labels and your
+                    field names are sent. Your profile values and photos
+                    should never be included.
+                </p>
+
+                <label class="switch">
+                    <input type="checkbox" id="useLLM">
+
+                    <div>
+                        <b>Use AI for unclear fields</b>
+                        <span>
+                            Enable AI-assisted matching as a fallback
+                            for fields that cannot be confidently identified.
+                        </span>
+                    </div>
+                </label>
+
+                <div id="aiBox" class="grid">
+
+                    <div class="field">
+                        <label class="l" for="apiKey">
+                            Anthropic API key
+                        </label>
+
+                        <input
+                            type="password"
+                            id="apiKey"
+                            autocomplete="off"
+                            spellcheck="false"
+                            placeholder="Enter your API key">
+                    </div>
+
+                    <div class="field">
+                        <label class="l" for="model">
+                            Model
+                        </label>
+
+                        <input
+                            type="text"
+                            id="model"
+                            spellcheck="false"
+                            placeholder="Enter model identifier">
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="card">
+
+                <h2>Backup and restore</h2>
+
+                <p class="lead">
+                    Export all your profiles, including profile photos,
+                    or import an existing backup.
+                </p>
+
+                <div class="row">
+
+                    <button
+                        type="button"
+                        class="btn primary"
+                        id="export">
+                        Export profiles
+                    </button>
+
+                    <button
+                        type="button"
+                        class="btn"
+                        id="import">
+                        Import profiles
+                    </button>
+
+                    <input
+                        type="file"
+                        id="importFile"
+                        accept=".json,application/json"
+                        hidden>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- Keep these scripts in this order -->
+    <script src="synonyms.js"></script>
+    <script src="options.js"></script>
+
+</body>
+</html>
